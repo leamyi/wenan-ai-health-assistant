@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>问安 · 高保真原型（5 页）</title>
+<style>
+:root{
+  --primary:#00897B; --primary-dark:#00695C; --primary-light:#E0F2F1;
+  --bg:#F5F5F5; --card:#FFFFFF; --text:#212121; --text-2:#616161; --text-3:#9E9E9E;
+  --line:#EEEEEE; --radius:12px;
+  --warn-bg:#FFF3E0; --warn:#E65100;
+  --danger:#C62828; --danger-bg:#FFEBEE;
+  --ok:#2E7D32; --ok-bg:#E8F5E9;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#E4E9EC}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue","Microsoft YaHei",sans-serif;color:var(--text);-webkit-font-smoothing:antialiased;padding:40px 32px 64px}
+button{font-family:inherit;border:none;background:none;cursor:pointer;color:inherit}
+input{font-family:inherit}
+
+/* ===== 画板说明 ===== */
+.board-head{max-width:2040px;margin:0 auto 32px;display:flex;align-items:flex-end;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.board-head h1{font-size:26px;letter-spacing:.5px}
+.board-head h1 span{color:var(--primary)}
+.board-head p{font-size:13px;color:var(--text-2);margin-top:6px}
+.legend{display:flex;gap:16px;font-size:12px;color:var(--text-2);flex-wrap:wrap}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:6px}
+.board{display:flex;flex-wrap:wrap;gap:40px 36px;justify-content:center;max-width:2040px;margin:0 auto}
+.artboard{display:flex;flex-direction:column;gap:12px}
+.artboard-label{font-size:13px;color:var(--text-2);font-weight:600;display:flex;gap:8px;align-items:center}
+.artboard-label b{background:var(--primary);color:#fff;font-size:11px;padding:2px 7px;border-radius:6px}
+
+/* ===== 手机容器 ===== */
+.phone{width:375px;height:812px;background:var(--bg);border-radius:44px;overflow:hidden;position:relative;display:flex;flex-direction:column;
+  box-shadow:0 0 0 10px #1C1C1E,0 0 0 11px #3A3A3C,0 30px 60px rgba(0,0,0,.25);transition:box-shadow .3s}
+.phone.flash{box-shadow:0 0 0 10px #1C1C1E,0 0 0 14px var(--primary),0 30px 60px rgba(0,137,123,.35)}
+
+.statusbar{height:44px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 26px 0 32px;font-size:15px;font-weight:600;background:#fff;position:relative}
+.statusbar::after{content:"";position:absolute;left:50%;top:9px;transform:translateX(-50%);width:120px;height:30px;background:#000;border-radius:20px}
+.statusbar .icons{display:flex;gap:6px;align-items:center}
+.disclaimer{flex:none;background:var(--warn-bg);color:var(--warn);font-size:12px;line-height:1;padding:8px 16px;display:flex;align-items:center;gap:6px}
+.disclaimer svg{flex:none}
+
+.navbar{flex:none;height:48px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 8px;border-bottom:1px solid var(--line)}
+.navbar h2{font-size:17px;font-weight:600;position:absolute;left:50%;transform:translateX(-50%)}
+.navbar .nb-btn{width:40px;height:40px;display:grid;place-items:center;border-radius:10px;color:var(--text)}
+.navbar .nb-btn:active{background:var(--bg)}
+.navbar{position:relative}
+
+.content{flex:1;overflow-y:auto;overflow-x:hidden;scrollbar-width:none}
+.content::-webkit-scrollbar{display:none}
+
+.tabbar{flex:none;height:83px;background:#fff;border-top:1px solid var(--line);display:flex;padding-top:6px;position:relative}
+.tabbar::after{content:"";position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:134px;height:5px;border-radius:3px;background:#1C1C1E}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:var(--text-3);padding-top:2px}
+.tab.active{color:var(--primary);font-weight:600}
+.tab svg{width:24px;height:24px}
+
+.card{background:var(--card);border-radius:var(--radius)}
+.sec-title{display:flex;justify-content:space-between;align-items:center;margin:24px 16px 12px}
+.sec-title h3{font-size:17px;font-weight:600}
+.sec-title a{font-size:13px;color:var(--text-3);text-decoration:none;cursor:pointer}
+
+.btn-primary{background:var(--primary);color:#fff;border-radius:var(--radius);font-size:16px;font-weight:600;height:48px;display:flex;align-items:center;justify-content:center;gap:6px;width:100%;transition:background .15s,transform .1s}
+.btn-primary:active{background:var(--primary-dark);transform:scale(.98)}
+.btn-outline{border:1.5px solid var(--primary);color:var(--primary);background:#fff;border-radius:var(--radius);font-size:15px;font-weight:600;height:46px;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn-outline:active{background:var(--primary-light)}
+
+/* ===== ① 首页 ===== */
+.home-hero{background:linear-gradient(180deg,#fff 0%,#fff 70%,var(--bg) 100%);padding:20px 16px 8px}
+.greet-row{display:flex;justify-content:space-between;align-items:flex-start}
+.greet small{font-size:13px;color:var(--text-3)}
+.greet h1{font-size:22px;font-weight:700;margin-top:4px;line-height:1.35}
+.bell{width:40px;height:40px;border-radius:50%;background:var(--bg);display:grid;place-items:center;position:relative}
+.bell::after{content:"";position:absolute;top:9px;right:10px;width:7px;height:7px;background:#E53935;border-radius:50%;border:1.5px solid var(--bg)}
+.search{margin-top:18px;height:56px;border-radius:var(--radius);background:var(--bg);border:1.5px solid transparent;display:flex;align-items:center;gap:10px;padding:0 14px;transition:border .15s,background .15s}
+.search:focus-within{border-color:var(--primary);background:#fff}
+.search input{flex:1;border:none;outline:none;background:transparent;font-size:16px;color:var(--text)}
+.search input::placeholder{color:var(--text-3)}
+.search .mic{width:32px;height:32px;border-radius:8px;display:grid;place-items:center;color:var(--primary)}
+.home-hero .btn-primary{margin-top:12px;height:50px;box-shadow:0 6px 16px rgba(0,137,123,.25)}
+.hint-line{display:flex;gap:6px;justify-content:center;font-size:12px;color:var(--text-3);margin-top:10px;align-items:center}
+
+.grid{margin:0 16px;padding:18px 8px 10px;display:grid;grid-template-columns:repeat(4,1fr);row-gap:14px}
+.grid-item{display:flex;flex-direction:column;align-items:center;gap:7px;font-size:13px;color:var(--text)}
+.grid-item .ic{width:50px;height:50px;border-radius:14px;display:grid;place-items:center;font-size:25px;transition:transform .12s}
+.grid-item:active .ic{transform:scale(.92)}
+
+.article-card{margin:0 16px 12px;padding:16px;display:flex;gap:12px;cursor:pointer;transition:box-shadow .15s}
+.article-card:hover{box-shadow:0 4px 14px rgba(0,0,0,.06)}
+.article-card .txt{flex:1;min-width:0}
+.article-card h4{font-size:16px;font-weight:600;line-height:1.4}
+.article-card p{font-size:13px;color:var(--text-2);line-height:1.6;margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.article-card .meta{display:flex;gap:10px;align-items:center;margin-top:10px;font-size:12px;color:var(--text-3)}
+.tag{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:6px;background:var(--primary-light);color:var(--primary);font-size:12px;font-weight:500}
+.article-card .thumb{width:84px;height:84px;border-radius:10px;flex:none;display:grid;place-items:center;font-size:36px}
+
+/* ===== ② 问诊 ===== */
+.seg-wrap{flex:none;background:#fff;padding:10px 16px 12px}
+.seg{display:flex;background:var(--bg);border-radius:10px;padding:3px;position:relative}
+.seg button{flex:1;height:34px;font-size:14px;color:var(--text-2);border-radius:8px;position:relative;z-index:1;transition:color .2s}
+.seg button.on{color:var(--primary);font-weight:600}
+.seg .thumb{position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);background:#fff;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.1);transition:transform .25s}
+.seg.right .thumb{transform:translateX(100%)}
+
+.chat{padding:14px 16px 20px}
+.chat-time{text-align:center;font-size:12px;color:var(--text-3);margin-bottom:14px}
+.msg-user{display:flex;justify-content:flex-end;gap:8px;margin-bottom:16px}
+.bubble-user{background:#E8E8E8;color:var(--text);font-size:15px;line-height:1.55;padding:11px 14px;border-radius:16px 4px 16px 16px;max-width:250px}
+.avatar-s{width:34px;height:34px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:14px;font-weight:700}
+.msg-ai{display:flex;gap:8px}
+.ai-card{flex:1;padding:14px 14px 14px;border-radius:4px 16px 16px 16px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.ai-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.ai-name{font-size:13px;color:var(--text-2);font-weight:600}
+.badge-ok{display:inline-flex;align-items:center;gap:3px;background:var(--ok-bg);color:var(--ok);font-size:12px;font-weight:600;height:22px;padding:0 8px;border-radius:11px}
+.ai-sec{margin-top:12px}
+.ai-sec:first-of-type{margin-top:0}
+.ai-sec h5{font-size:15px;font-weight:700;color:var(--text);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.ai-sec h5::before{content:"";width:3px;height:14px;border-radius:2px;background:var(--primary)}
+.ai-sec p,.ai-sec li{font-size:14px;line-height:1.65;color:#333}
+.ai-sec ol{list-style:none;counter-reset:n}
+.ai-sec ol li{counter-increment:n;position:relative;padding-left:26px;margin-bottom:6px}
+.ai-sec ol li::before{content:counter(n);position:absolute;left:0;top:3px;width:18px;height:18px;border-radius:50%;background:var(--primary-light);color:var(--primary);font-size:11px;font-weight:700;display:grid;place-items:center}
+.ai-sec ul{list-style:none}
+.ai-sec ul li{position:relative;padding-left:14px;margin-bottom:4px}
+.ai-sec ul li::before{content:"";position:absolute;left:3px;top:10px;width:5px;height:5px;border-radius:50%;background:var(--text-3)}
+.ai-sec b{color:var(--primary-dark)}
+
+.alert{background:var(--danger-bg);border-radius:10px;border-left:4px solid var(--danger);padding:12px 12px 12px 12px;margin:10px 0 4px}
+.alert p{font-size:14px;line-height:1.6;color:var(--danger);font-weight:500}
+.alert .btn-120{margin-top:10px;background:var(--danger);color:#fff;height:38px;width:100%;border-radius:8px;font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:6px}
+.alert .btn-120:active{background:#A51F1F}
+.ai-foot{border-top:1px dashed var(--line);margin-top:14px;padding-top:12px}
+.fb-row{display:flex;gap:8px}
+.fb{height:32px;padding:0 12px;border-radius:16px;border:1px solid #E0E0E0;font-size:13px;color:var(--text-2);display:inline-flex;align-items:center;gap:4px;transition:all .15s}
+.fb.on{border-color:var(--primary);color:var(--primary);background:var(--primary-light)}
+.ai-foot .btn-primary{margin-top:12px;height:44px;font-size:15px}
+.ai-note{font-size:11px;color:var(--text-3);margin-top:8px;text-align:center}
+
+.inputbar{flex:none;background:#fff;border-top:1px solid var(--line);padding:8px 12px;display:flex;gap:8px;align-items:center}
+.inputbar .field{flex:1;height:40px;border-radius:20px;background:var(--bg);display:flex;align-items:center;padding:0 14px}
+.inputbar input{flex:1;border:none;outline:none;background:transparent;font-size:15px}
+.send{width:40px;height:40px;border-radius:50%;background:var(--primary);display:grid;place-items:center;color:#fff}
+
+/* ===== ③ 科普详情 ===== */
+.art{padding:20px 20px 24px;background:#fff}
+.art h1{font-size:24px;font-weight:700;line-height:1.4}
+.art .meta{display:flex;align-items:center;gap:10px;margin-top:12px;font-size:12px;color:var(--text-3)}
+.art .summary{margin-top:16px;background:var(--primary-light);border-radius:10px;padding:12px 14px;font-size:14px;line-height:1.65;color:var(--primary-dark)}
+.art section{margin-top:24px}
+.art h2{font-size:18px;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.art h2 .no{width:24px;height:24px;border-radius:7px;background:var(--primary);color:#fff;font-size:13px;display:grid;place-items:center;flex:none}
+.art p,.art li{font-size:15px;line-height:1.8;color:#333}
+.art ul{list-style:none}
+.art ul li{padding-left:16px;position:relative;margin-bottom:6px}
+.art ul li::before{content:"";position:absolute;left:4px;top:12px;width:5px;height:5px;border-radius:50%;background:var(--primary)}
+.temp-table{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.temp-table div{background:var(--bg);border-radius:10px;padding:10px 6px;text-align:center}
+.temp-table b{display:block;font-size:14px}
+.temp-table span{font-size:12px;color:var(--text-2)}
+.myth{background:var(--bg);border-radius:10px;padding:12px 14px;margin-bottom:8px}
+.myth .x{font-size:14px;font-weight:600;color:var(--danger)}
+.myth .v{font-size:14px;color:#333;margin-top:4px;line-height:1.65}
+.art .ref{margin-top:24px;font-size:12px;color:var(--text-3);line-height:1.6;border-top:1px solid var(--line);padding-top:14px}
+.actionbar{flex:none;background:#fff;border-top:1px solid var(--line);padding:10px 16px;display:flex;gap:10px}
+.actionbar>*{flex:1}
+.actionbar .btn-primary{height:46px;font-size:15px}
+
+/* ===== ④ 准备包 ===== */
+.pack-head{padding:18px 16px 4px}
+.pack-head h1{font-size:24px;font-weight:700}
+.pack-head p{font-size:14px;color:var(--text-2);margin-top:4px}
+.pack-meta{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.chip{height:26px;padding:0 10px;border-radius:13px;background:#fff;font-size:12px;color:var(--text-2);display:inline-flex;align-items:center;gap:4px}
+.pcard{margin:12px 16px 0;padding:16px}
+.pcard-h{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.pcard-h .ic{width:28px;height:28px;border-radius:8px;background:var(--primary-light);color:var(--primary);display:grid;place-items:center;font-size:14px}
+.pcard-h h3{font-size:15px;font-weight:600;flex:1}
+.pcard-h .edit{font-size:13px;color:var(--primary)}
+.complaint{font-size:18px;font-weight:600;line-height:1.5}
+.complaint em{font-style:normal;color:var(--danger)}
+.timeline{position:relative;padding-left:4px}
+.tl{display:flex;gap:12px;position:relative;padding-bottom:18px}
+.tl:last-child{padding-bottom:0}
+.tl::before{content:"";position:absolute;left:61px;top:16px;bottom:-2px;width:2px;background:#E0E0E0}
+.tl:last-child::before{display:none}
+.tl .t{width:44px;font-size:14px;font-weight:600;color:var(--text);padding-top:1px;font-variant-numeric:tabular-nums}
+.tl .dot{width:12px;height:12px;border-radius:50%;background:#fff;border:3px solid var(--primary);flex:none;margin-top:4px;position:relative;z-index:1}
+.tl.hot .dot{border-color:#E53935}
+.tl.now .dot{background:var(--primary);box-shadow:0 0 0 4px rgba(0,137,123,.18)}
+.tl .d{flex:1;font-size:14px;line-height:1.5;color:#333}
+.tl .d small{display:block;font-size:12px;color:var(--text-3);margin-top:2px}
+.temp{font-weight:700}
+.tl.hot .temp{color:#E53935}
+.check{display:flex;gap:12px;align-items:center;padding:12px 0;border-top:1px solid var(--line);cursor:pointer;user-select:none}
+.check:first-of-type{border-top:none;padding-top:2px}
+.check .box{width:22px;height:22px;border-radius:6px;border:2px solid #BDBDBD;flex:none;display:grid;place-items:center;transition:all .15s}
+.check.on .box{background:var(--primary);border-color:var(--primary)}
+.check .box svg{opacity:0;transition:opacity .15s}
+.check.on .box svg{opacity:1}
+.check span{font-size:15px;line-height:1.5}
+.add-q{display:flex;align-items:center;gap:6px;font-size:14px;color:var(--primary);padding-top:10px;border-top:1px solid var(--line)}
+.pack-tip{margin:14px 16px 20px;font-size:12px;color:var(--text-3);line-height:1.6;text-align:center}
+.bottom-cta{flex:none;background:#fff;border-top:1px solid var(--line);padding:10px 16px}
+.bottom-cta .btn-primary{height:50px;font-size:16px}
+
+/* ===== ⑤ 我的 ===== */
+.me-head{background:linear-gradient(160deg,#00897B 0%,#26A69A 100%);padding:24px 20px 56px;color:#fff;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden}
+.me-head::after{content:"";position:absolute;right:-40px;top:-50px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.08)}
+.me-avatar{width:64px;height:64px;border-radius:50%;background:#fff;display:grid;place-items:center;font-size:32px;border:3px solid rgba(255,255,255,.5);flex:none}
+.me-name{font-size:20px;font-weight:700}
+.me-sub{font-size:13px;opacity:.85;margin-top:4px}
+.me-head .set{margin-left:auto;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);display:grid;place-items:center;position:relative;z-index:1}
+.stats{margin:-36px 16px 0;position:relative;display:flex;padding:16px 0;box-shadow:0 4px 16px rgba(0,0,0,.06)}
+.stat{flex:1;text-align:center}
+.stat+.stat{border-left:1px solid var(--line)}
+.stat b{font-size:24px;font-weight:700;color:var(--text);font-variant-numeric:tabular-nums}
+.stat b small{font-size:13px;font-weight:500;color:var(--text-2);margin-left:2px}
+.stat div{font-size:13px;color:var(--text-2);margin-top:2px}
+.menu{margin:12px 16px 0;overflow:hidden}
+.menu-item{display:flex;align-items:center;gap:12px;height:54px;padding:0 16px;cursor:pointer;position:relative}
+.menu-item+.menu-item::before{content:"";position:absolute;top:0;left:56px;right:0;height:1px;background:var(--line)}
+.menu-item:active{background:#FAFAFA}
+.menu-item .mi{width:28px;height:28px;border-radius:8px;display:grid;place-items:center}
+.menu-item .ml{flex:1;font-size:15px}
+.menu-item .mr{font-size:13px;color:var(--text-3);display:flex;align-items:center;gap:4px}
+.menu-item.danger .ml{color:var(--danger)}
+.me-foot{margin:20px 24px 24px;font-size:11px;line-height:1.7;color:var(--text-3);text-align:center}
+.me-foot b{color:var(--text-2);font-weight:600}
+
+/* toast */
+.toast{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%) scale(.9);background:rgba(33,33,33,.9);color:#fff;font-size:14px;padding:12px 18px;border-radius:10px;opacity:0;pointer-events:none;transition:all .2s;display:flex;align-items:center;gap:8px;z-index:20;white-space:nowrap}
+.toast.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+[data-goto]{cursor:pointer}
+</style>
+</head>
+<body>
+
+<div class="board-head">
+  <div>
+    <h1><span>问安</span> · AI 健康科普自查工具 — 高保真原型</h1>
+    <p>就医前自查与面诊准备 ｜ 375 × 812 ｜ 5 个页面 ｜ 点击 Tab、卡片与按钮可在画板间跳转</p>
+  </div>
+  <div class="legend">
+    <span><i style="background:#00897B"></i>主色 #00897B</span>
+    <span><i style="background:#F5F5F5;border:1px solid #ddd"></i>背景 #F5F5F5</span>
+    <span><i style="background:#212121"></i>正文 #212121</span>
+    <span><i style="background:#FFF3E0;border:1px solid #FFCC80"></i>提示 #FFF3E0 / #E65100</span>
+    <span><i style="background:#C62828"></i>警示 #C62828</span>
+  </div>
+</div>
+
+<div class="board">
+
+<!-- ================= ① 首页 ================= -->
+<div class="artboard">
+  <div class="artboard-label"><b>01</b>首页</div>
+  <div class="phone" id="p-home" data-tab="0">
+    <div class="content">
+      <div class="home-hero">
+        <div class="greet-row">
+          <div class="greet">
+            <small>早上好 · 9月27日 周六</small>
+            <h1>你好，今天身体怎么样？</h1>
+          </div>
+          <button class="bell" aria-label="消息"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#424242" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></button>
+        </div>
+        <label class="search">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9E9E9E" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input type="text" placeholder="描述你的症状，如：发烧、头痛">
+          <span class="mic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M19 10v1a7 7 0 0 1-14 0v-1M12 18v4"/></svg></span>
+        </label>
+        <button class="btn-primary" data-goto="p-chat">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9"/></svg>
+          开始自查
+        </button>
+        <div class="hint-line">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+          对话内容仅保存在本机，可随时清空
+        </div>
+      </div>
+
+      <div class="sec-title"><h3>常见症状</h3><a>全部 ›</a></div>
+      <div class="card grid">
+        <div class="grid-item" data-goto="p-chat"><div class="ic" style="background:#FFEBEE">🤒</div>发热</div>
+        <div class="grid-item" data-goto="p-chat"><div class="ic" style="background:#E3F2FD">😷</div>咳嗽</div>
+        <div class="grid-item" data-goto="p-chat"><div class="ic" style="background:#F3E5F5">🤕</div>头痛</div>
+        <div class="grid-item" data-goto="p-chat"><div class="ic" style="background:#FFF8E1">🚽</div>腹泻</div>
+        <div class="grid-item" data-goto="p-chat"><div class="ic" style="background:#FCE4EC">🤧</div>过敏</div>
+        <div class="grid-item" data-goto="p-chat"><div class="ic" style="background:#E8EAF6">🌙</div>失眠</div>
+        <div class="grid-item" data-goto="p-chat"><div class="ic" style="background:#FBE9E7">🤢</div>胃痛</div>
+        <div class="grid-item" data-goto="p-chat"><div class="ic" style="background:#E0F2F1">👁️</div>结膜炎</div>
+      </div>
+
+      <div class="sec-title"><h3>健康科普</h3><a>更多 ›</a></div>
+      <div class="card article-card" data-goto="p-article">
+        <div class="txt">
+          <h4>孩子发烧了，家长应对指南</h4>
+          <p>38.9℃ 要不要马上去医院？退烧药怎么选？一文讲清居家护理要点与必须就医的信号。</p>
+          <div class="meta"><span class="tag">发热</span><span>阅读 4 分钟</span><span>· 2.3 万人看过</span></div>
+        </div>
+        <div class="thumb" style="background:linear-gradient(135deg,#FFEBEE,#FFCDD2)">🌡️</div>
+      </div>
+      <div class="card article-card">
+        <div class="txt">
+          <h4>换季总咳嗽，是感冒还是过敏？</h4>
+          <p>从咳嗽时间、痰液性状和伴随症状三个角度，帮你初步区分，并了解什么时候需要看医生。</p>
+          <div class="meta"><span class="tag">咳嗽</span><span>阅读 3 分钟</span><span>· 1.1 万人看过</span></div>
+        </div>
+        <div class="thumb" style="background:linear-gradient(135deg,#E3F2FD,#BBDEFB)">🫁</div>
+      </div>
+      <div style="height:12px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= ② 问诊 ================= -->
+<div class="artboard">
+  <div class="artboard-label"><b>02</b>问诊 · 对话</div>
+  <div class="phone" id="p-chat" data-tab="1">
+    <div class="navbar">
+      <button class="nb-btn" aria-label="历史"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg></button>
+      <h2>问安助手</h2>
+      <button class="nb-btn" aria-label="新对话"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
+    </div>
+    <div class="seg-wrap">
+      <div class="seg" id="seg">
+        <div class="thumb"></div>
+        <button class="on">自由提问</button>
+        <button>引导问诊</button>
+      </div>
+    </div>
+    <div class="content">
+      <div class="chat">
+        <div class="chat-time">今天 23:05</div>
+        <div class="msg-user">
+          <div class="bubble-user">孩子半夜发烧 38.9℃怎么办？</div>
+          <div class="avatar-s" style="background:#FFE0B2">🙂</div>
+        </div>
+
+        <div class="msg-ai">
+          <div class="avatar-s" style="background:var(--primary);color:#fff">问</div>
+          <div class="card ai-card">
+            <div class="ai-head">
+              <span class="ai-name">问安助手</span>
+              <span class="badge-ok">✓ 确定</span>
+            </div>
+
+            <div class="ai-sec">
+              <h5>一、先说结论</h5>
+              <p>38.9℃ 属于<b>中度发热</b>。如果孩子精神状态尚可、能正常喝水和排尿，多数情况可以<b>先居家护理并密切观察</b>，不一定需要连夜就诊。</p>
+            </div>
+
+            <div class="ai-sec">
+              <h5>二、居家护理建议</h5>
+              <ol>
+                <li><b>补充水分：</b>少量多次喂水或口服补液盐，留意尿量是否减少。</li>
+                <li><b>按需退热：</b>孩子明显不适时，可按说明书剂量使用对乙酰氨基酚或布洛芬，不要自行叠加用药；6 月龄以下请先咨询医生。</li>
+                <li><b>适度散热：</b>减少衣被，室温保持 24–26℃，可温水擦浴；不要捂汗、不要用酒精擦身。</li>
+              </ol>
+            </div>
+
+            <div class="ai-sec">
+              <h5>三、何时就医</h5>
+              <ul>
+                <li>3 月龄以下婴儿出现发热</li>
+                <li>发热超过 3 天，或退热后精神仍很差</li>
+                <li>拒食拒水、尿量明显减少、反复呕吐</li>
+                <li>呼吸急促、持续哭闹无法安抚</li>
+              </ul>
+              <div class="alert">
+                <p>⚠ 检测到急重症信号：如出现抽搐、意识模糊、皮肤出现紫斑，请立即拨打 120</p>
+                <button class="btn-120" data-toast="正在呼叫 120…">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1Z"/></svg>
+                  拨打 120
+                </button>
+              </div>
+            </div>
+
+            <div class="ai-foot">
+              <div class="fb-row">
+                <button class="fb" data-fb>有帮助 👍</button>
+                <button class="fb" data-fb>没帮助 👎</button>
+              </div>
+              <button class="btn-primary" data-goto="p-pack">🧳 生成就诊准备包</button>
+              <div class="ai-note">以上内容为健康科普，不能替代医生面诊</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="inputbar">
+      <div class="field"><input type="text" placeholder="继续描述症状，如：精神怎么样"></div>
+      <button class="send" aria-label="发送"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= ③ 科普详情 ================= -->
+<div class="artboard">
+  <div class="artboard-label"><b>03</b>科普详情</div>
+  <div class="phone" id="p-article" data-tab="0">
+    <div class="navbar">
+      <button class="nb-btn" data-goto="p-home" aria-label="返回"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+      <h2>健康科普</h2>
+      <button class="nb-btn" aria-label="收藏"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+    </div>
+    <div class="content">
+      <article class="art">
+        <h1>孩子发烧了，家长应对指南</h1>
+        <div class="meta"><span class="tag">发热</span><span>问安健康科普</span><span>· 阅读约 4 分钟</span></div>
+        <div class="summary">💡 发热本身是身体对抗感染的防御反应。家长更需要关注的是孩子的<b>精神状态</b>，而不只是体温数字。</div>
+
+        <section>
+          <h2><span class="no">1</span>什么是发热</h2>
+          <p>一般来说，儿童腋下体温超过 37.3℃ 即可视为发热。按体温高低，常分为：</p>
+          <div class="temp-table">
+            <div><b>37.3–38℃</b><span>低热</span></div>
+            <div><b>38.1–39℃</b><span>中度发热</span></div>
+            <div><b>39.1–41℃</b><span>高热</span></div>
+          </div>
+        </section>
+
+        <section>
+          <h2><span class="no">2</span>常见原因</h2>
+          <ul>
+            <li><b>病毒感染</b>最常见，如普通感冒、流感、幼儿急疹等；</li>
+            <li>细菌感染，如中耳炎、扁桃体炎、尿路感染、肺炎等；</li>
+            <li>其他：接种疫苗后的短暂反应、衣物过厚导致的“捂热”。</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2><span class="no">3</span>居家护理</h2>
+          <ul>
+            <li>少量多次补充水分，保证休息，饮食清淡；</li>
+            <li>孩子明显不适时，按说明书剂量使用退烧药，记录用药时间；</li>
+            <li>适当减少衣被，保持室内通风，温水擦浴帮助散热；</li>
+            <li>每 2–4 小时测一次体温，并记下精神、进食和尿量情况。</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2><span class="no">4</span>何时就医</h2>
+          <ul>
+            <li>3 月龄以下婴儿发热；</li>
+            <li>发热持续超过 3 天，或反复高热；</li>
+            <li>精神萎靡、嗜睡、拒食、尿量明显减少；</li>
+            <li>出现抽搐、意识模糊、皮肤紫斑、呼吸困难，<b style="color:var(--danger)">应立即拨打 120</b>。</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2><span class="no">5</span>常见误区</h2>
+          <div class="myth"><div class="x">✕ 捂一身汗就能退烧</div><div class="v">捂汗会阻碍散热，可能让体温更高，婴幼儿甚至可能出现“捂热综合征”。</div></div>
+          <div class="myth"><div class="x">✕ 用酒精擦身降温更快</div><div class="v">酒精可经皮肤吸收，引起不适甚至中毒，不推荐用于儿童降温。</div></div>
+          <div class="myth"><div class="x">✕ 发烧会把脑子烧坏</div><div class="v">普通发热一般不会损伤大脑，真正需要警惕的是引起发热的严重疾病本身。</div></div>
+        </section>
+
+        <div class="ref">本文为健康科普内容，仅供参考，不能替代专业医生的诊断与治疗。如有疑问请及时就医。</div>
+      </article>
+    </div>
+    <div class="actionbar">
+      <button class="btn-outline" data-goto="p-chat">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.8 7L3 21l2-6A8 8 0 1 1 21 12Z"/></svg>继续问 AI</button>
+      <button class="btn-primary" data-goto="p-pack">生成就诊准备包</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= ④ 就诊准备包 ================= -->
+<div class="artboard">
+  <div class="artboard-label"><b>04</b>就诊准备包</div>
+  <div class="phone" id="p-pack" data-tab="1">
+    <div class="navbar">
+      <button class="nb-btn" data-goto="p-chat" aria-label="返回"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg></button>
+      <h2>准备包</h2>
+      <button class="nb-btn" aria-label="分享"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7M16 6l-4-4-4 4M12 2v13"/></svg></button>
+    </div>
+    <div class="content">
+      <div class="pack-head">
+        <h1>就诊准备包</h1>
+        <p>一页纸，帮您高效面诊</p>
+        <div class="pack-meta">
+          <span class="chip">🕐 生成于 今天 23:08</span>
+          <span class="chip">🏥 可咨询：儿科</span>
+        </div>
+      </div>
+
+      <div class="card pcard">
+        <div class="pcard-h"><span class="ic">📋</span><h3>主诉</h3><span class="edit">编辑</span></div>
+        <div class="complaint">孩子发热 6 小时，最高 <em>38.9℃</em></div>
+      </div>
+
+      <div class="card pcard">
+        <div class="pcard-h"><span class="ic">⏱</span><h3>症状时间线</h3><span class="edit">+ 添加</span></div>
+        <div class="timeline">
+          <div class="tl"><div class="t">20:00</div><div class="dot"></div><div class="d">开始发热 <span class="temp">38.2℃</span><small>精神尚可，能正常喝水</small></div></div>
+          <div class="tl hot"><div class="t">22:30</div><div class="dot"></div><div class="d">体温升至 <span class="temp">38.9℃</span><small>最高体温，孩子哭闹</small></div></div>
+          <div class="tl now"><div class="t">23:00</div><div class="dot"></div><div class="d">物理降温中<small>温水擦浴、减少衣物</small></div></div>
+        </div>
+      </div>
+
+      <div class="card pcard">
+        <div class="pcard-h"><span class="ic">❓</span><h3>想问医生的问题</h3></div>
+        <div class="check on"><span class="box"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span><span>需要做哪些检查？</span></div>
+        <div class="check on"><span class="box"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span><span>可以用什么退烧方式？</span></div>
+        <div class="check on"><span class="box"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg></span><span>出现什么情况要立即来医院？</span></div>
+        <div class="add-q"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>添加问题</div>
+      </div>
+
+      <div class="pack-tip">就诊时可直接向医生出示本页 · 内容由您的描述整理生成，请以医生判断为准</div>
+    </div>
+    <div class="bottom-cta">
+      <button class="btn-primary" data-copy>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>
+        复制全部内容
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= ⑤ 我的 ================= -->
+<div class="artboard">
+  <div class="artboard-label"><b>05</b>我的</div>
+  <div class="phone" id="p-me" data-tab="2">
+    <div class="content">
+      <div class="me-head">
+        <div class="me-avatar">🌿</div>
+        <div>
+          <div class="me-name">健康守护者</div>
+          <div class="me-sub">问安已陪伴你 28 天</div>
+        </div>
+        <span class="set"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1Z"/></svg></span>
+      </div>
+
+      <div class="card stats">
+        <div class="stat"><b>12<small>次</small></b><div>提问</div></div>
+        <div class="stat" data-goto="p-pack"><b>3<small>份</small></b><div>准备包</div></div>
+      </div>
+
+      <div class="card menu">
+        <div class="menu-item" data-goto="p-chat">
+          <span class="mi" style="background:#E3F2FD;color:#1E88E5"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span>
+          <span class="ml">历史记录</span><span class="mr">12 条 ›</span>
+        </div>
+        <div class="menu-item" data-goto="p-pack">
+          <span class="mi" style="background:var(--primary-light);color:var(--primary)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 13h18"/></svg></span>
+          <span class="ml">我的就诊准备包</span><span class="mr">3 份 ›</span>
+        </div>
+      </div>
+
+      <div class="card menu">
+        <div class="menu-item">
+          <span class="mi" style="background:var(--warn-bg);color:var(--warn)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/></svg></span>
+          <span class="ml">免责声明</span><span class="mr">›</span>
+        </div>
+        <div class="menu-item danger" data-toast="数据已清空">
+          <span class="mi" style="background:var(--danger-bg);color:var(--danger)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></span>
+          <span class="ml">清空数据</span><span class="mr">›</span>
+        </div>
+        <div class="menu-item">
+          <span class="mi" style="background:#F3E5F5;color:#8E24AA"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg></span>
+          <span class="ml">版本信息</span><span class="mr">V1.0</span>
+        </div>
+      </div>
+
+      <div class="me-foot">
+        <b>免责声明</b><br>
+        问安提供的所有内容均为健康科普信息，仅供参考，不构成任何医疗诊断或治疗建议。如有身体不适，请及时前往正规医疗机构就诊；紧急情况请立即拨打 120。
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+// 注入：状态栏 + 免责横幅 + Tab 栏
+const statusHTML = `<div class="statusbar"><span>12:00</span><span class="icons">
+  <svg width="18" height="12" viewBox="0 0 18 12" fill="#212121"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0" width="3" height="12" rx="1"/></svg>
+  <svg width="16" height="12" viewBox="0 0 16 12" fill="#212121"><path d="M8 2.5c2.3 0 4.4.9 6 2.4l1.2-1.3A10.4 10.4 0 0 0 8 .7 10.4 10.4 0 0 0 .8 3.6L2 4.9a8.6 8.6 0 0 1 6-2.4Zm0 3.6c1.3 0 2.5.5 3.4 1.3l1.2-1.3A6.8 6.8 0 0 0 8 4.3a6.8 6.8 0 0 0-4.6 1.8l1.2 1.3c.9-.8 2.1-1.3 3.4-1.3Zm0 3.5-2 2.1 2 .3 2-.3Z"/></svg>
+  <svg width="26" height="12" viewBox="0 0 26 12"><rect x=".5" y=".5" width="22" height="11" rx="3" fill="none" stroke="#212121" opacity=".4"/><rect x="2" y="2" width="18" height="8" rx="1.5" fill="#212121"/><path d="M24 4v4a2 2 0 0 0 0-4Z" fill="#212121" opacity=".4"/></svg>
+</span></div>`;
+const bannerHTML = `<div class="disclaimer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E65100" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg>问安为健康科普工具，不构成诊断建议</div>`;
+const tabs = [
+  {name:'首页', goto:'p-home', icon:'<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>'},
+  {name:'问诊', goto:'p-chat', icon:'<path d="M21 12a8 8 0 0 1-11.8 7L3 21l2-6A8 8 0 1 1 21 12Z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01" stroke-width="2.8"/>'},
+  {name:'我的', goto:'p-me', icon:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>'}
+];
+document.querySelectorAll('.phone').forEach(p=>{
+  const active = +p.dataset.tab;
+  p.insertAdjacentHTML('afterbegin', statusHTML + bannerHTML);
+  p.insertAdjacentHTML('beforeend', `<nav class="tabbar">${tabs.map((t,i)=>`
+    <div class="tab ${i===active?'active':''}" data-goto="${t.goto}">
+      <svg viewBox="0 0 24 24" fill="${i===active?'currentColor':'none'}" fill-opacity="${i===active?'.14':'0'}" stroke="currentColor" stroke-width="${i===active?2.2:1.9}" stroke-linecap="round" stroke-linejoin="round">${t.icon}</svg>
+      ${t.name}</div>`).join('')}</nav><div class="toast"></div>`);
+});
+
+// 画板间跳转
+document.addEventListener('click', e=>{
+  const g = e.target.closest('[data-goto]');
+  if(g){
+    const el = document.getElementById(g.dataset.goto);
+    if(el && !el.contains(g) ){
+      el.scrollIntoView({behavior:'smooth', block:'center', inline:'center'});
+      el.classList.add('flash'); setTimeout(()=>el.classList.remove('flash'), 900);
+    }
+  }
+  const t = e.target.closest('[data-toast]');
+  if(t) toast(t.closest('.phone'), t.dataset.toast);
+});
+function toast(phone, text){
+  const el = phone.querySelector('.toast');
+  el.innerHTML = '✓ ' + text; el.classList.add('show');
+  clearTimeout(el._t); el._t = setTimeout(()=>el.classList.remove('show'), 1500);
+}
+
+// 分段切换
+const seg = document.getElementById('seg');
+seg.querySelectorAll('button').forEach((b,i)=>b.onclick=()=>{
+  seg.querySelectorAll('button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); seg.classList.toggle('right', i===1);
+});
+// 反馈
+document.querySelectorAll('[data-fb]').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('[data-fb]').forEach(x=>x!==b && x.classList.remove('on'));
+  b.classList.toggle('on');
+});
+// 复选
+document.querySelectorAll('.check').forEach(c=>c.onclick=()=>c.classList.toggle('on'));
+// 复制
+document.querySelector('[data-copy]').onclick = e=>{
+  const qs = [...document.querySelectorAll('#p-pack .check.on span:last-child')].map((s,i)=>`${i+1}. ${s.textContent}`).join('\n');
+  const text = `【就诊准备包】\n主诉：孩子发热 6 小时，最高 38.9℃\n症状时间线：\n20:00 开始发热 38.2℃\n22:30 体温升至 38.9℃\n23:00 物理降温中\n想问医生的问题：\n${qs}\n（由问安整理，仅供面诊参考）`;
+  navigator.clipboard?.writeText(text).catch(()=>{});
+  toast(e.currentTarget.closest('.phone'), '已复制到剪贴板');
+};
+</script>
+</body>
+</html>

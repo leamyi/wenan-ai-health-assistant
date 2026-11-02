@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>问安 · 我的</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #e8ecf1; display: flex; justify-content: center; padding: 24px 0; }
+.phone { width: 375px; height: 720px; background: #f7f9fa; border-radius: 28px; box-shadow: 0 12px 40px rgba(0,0,0,0.18); overflow: hidden; display: flex; flex-direction: column; }
+.screen { flex: 1; overflow-y: auto; }
+.statusbar { height: 28px; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #9aa5ad; }
+.header { background: linear-gradient(135deg, #00897B, #26a69a); color: #fff; padding: 20px 16px 22px; }
+.header .who { font-size: 17px; font-weight: 700; }
+.header .sub { font-size: 11.5px; opacity: 0.85; margin-top: 4px; }
+.section-title { font-size: 13px; font-weight: 700; color: #6b7a83; margin: 16px 16px 8px; }
+.hist { background: #fff; margin: 0 16px; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+.hi { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid #f0f3f5; text-decoration: none; color: #2b3a42; }
+.hi:last-child { border-bottom: none; }
+.hi .ico { width: 34px; height: 34px; border-radius: 9px; background: #e0f2f1; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+.hi .qt { font-size: 13px; font-weight: 500; }
+.hi .tm { font-size: 10.5px; color: #9aa5ad; margin-top: 3px; }
+.hi .chev { margin-left: auto; color: #c3ccd2; }
+.clear { margin: 10px 16px 0; text-align: center; font-size: 12.5px; color: #c0392b; background: #fff; border: 1px solid #f0d9d7; border-radius: 10px; padding: 10px; cursor: pointer; }
+.menu { background: #fff; margin: 0 16px; border-radius: 12px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+.mi { display: flex; align-items: center; gap: 10px; padding: 13px 14px; border-bottom: 1px solid #f0f3f5; font-size: 13.5px; color: #2b3a42; text-decoration: none; cursor: pointer; }
+.mi:last-child { border-bottom: none; }
+.mi .mi-ico { font-size: 16px; }
+.mi .chev { margin-left: auto; color: #c3ccd2; }
+.modal-mask { display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.45); z-index: 10; align-items: center; justify-content: center; }
+.modal-mask.show { display: flex; }
+.modal { width: 300px; background: #fff; border-radius: 14px; padding: 18px 16px 14px; }
+.modal .mt { font-size: 15px; font-weight: 700; color: #2b3a42; text-align: center; }
+.modal .mc { font-size: 12.5px; color: #6b7a83; line-height: 1.7; margin-top: 10px; }
+.modal .mb { display: flex; gap: 10px; margin-top: 14px; }
+.modal button { flex: 1; border: none; border-radius: 9px; padding: 9px; font-size: 13.5px; font-weight: 600; cursor: pointer; }
+.modal .cancel { background: #f0f3f5; color: #6b7a83; }
+.modal .ok { background: #e53935; color: #fff; }
+.toast { position: absolute; left: 50%; bottom: 90px; transform: translateX(-50%); background: rgba(30,40,46,0.9); color: #fff; font-size: 12.5px; border-radius: 8px; padding: 9px 16px; opacity: 0; transition: opacity .25s; pointer-events: none; z-index: 20; }
+.toast.show { opacity: 1; }
+.tabbar { height: 56px; background: #fff; border-top: 1px solid #e6ebee; display: flex; }
+.tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; font-size: 10px; color: #9aa5ad; gap: 2px; }
+.tab .ti { font-size: 19px; }
+.tab.on { color: #00897B; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="statusbar">9:41</div>
+  <div class="screen">
+    <div class="header">
+      <div class="who">我的问安</div>
+      <div class="sub">未登录 · 历史记录仅保存在本机，不采集身份信息</div>
+    </div>
+    <div class="section-title">最近问答</div>
+    <div class="hist">
+      <a class="hi" href="chat.html"><div class="ico">🌡️</div><div><div class="qt">孩子半夜发烧 38.9℃，怎么办？ <span style="font-size:9px;background:#e0f2f1;color:#00796b;border-radius:4px;padding:1px 5px;font-weight:600;">✓ 确定</span></div><div class="tm">今天 02:14 · 含就医警示</div></div><div class="chev">›</div></a>
+      <a class="hi" href="chat.html"><div class="ico">😷</div><div><div class="qt">咳嗽两天了，嗓子疼 <span style="font-size:9px;background:#fff3e0;color:#b26a00;border-radius:4px;padding:1px 5px;font-weight:600;">≈ 推测</span></div><div class="tm">昨天 21:36</div></div><div class="chev">›</div></a>
+      <a class="hi" href="article.html?id=sleep"><div class="ico">🌙</div><div><div class="qt">长期失眠怎么改善？</div><div class="tm">09-22 23:05</div></div><div class="chev">›</div></a>
+    </div>
+    <div class="section-title">诊前准备</div>
+    <div class="menu">
+      <a class="mi" href="prep-pack.html?topic=fever"><span class="mi-ico">🧳</span>我的就诊准备包<span class="chev">›</span></a>
+      <a class="mi" href="prep-pack.html?topic=fever"><span class="mi-ico">🕐</span>本次会话健康时间线<span class="chev">›</span></a>
+    </div>
+    <div class="clear" onclick="clearHist()">🗑️ 清空全部历史记录</div>
+    <div class="section-title">关于问安</div>
+    <div class="menu">
+      <a class="mi" href="javascript:showDisclaimer()"><span class="mi-ico">📜</span>免责声明与使用须知<span class="chev">›</span></a>
+      <a class="mi" href="javascript:toast('感谢反馈，我们会尽快处理')"><span class="mi-ico">🛡️</span>内容问题反馈<span class="chev">›</span></a>
+      <a class="mi" href="javascript:toast('问安 V2.1 · 作品集演示版 · 与 PRD V2.1 对应')"><span class="mi-ico">ℹ️</span>版本信息<span class="chev">›</span></a>
+    </div>
+    <div style="height: 20px"></div>
+  </div>
+  <div class="modal-mask" id="mask" onclick="if(event.target===this)hide()">
+    <div class="modal">
+      <div class="mt">免责声明与使用须知</div>
+      <div class="mc">1. 问安仅提供健康科普信息，不构成诊断建议，不能替代医生；<br>2. AI 回复基于公开健康科普资料生成，可能存在误差；<br>3. 疑似急重症时请立即拨打 120 或前往急诊；<br>4. 用药请遵医嘱或咨询药师；<br>5. 历史记录仅存本机，可随时删除。</div>
+      <div class="mb"><button class="ok" onclick="hide()">我已了解</button></div>
+    </div>
+  </div>
+  <div class="toast" id="toast"></div>
+  <div class="tabbar">
+    <a class="tab" href="index.html"><div class="ti">🏠</div>首页</a>
+    <a class="tab" href="chat.html"><div class="ti">💬</div>AI问答</a>
+    <a class="tab on" href="profile.html"><div class="ti">👤</div>我的</a>
+  </div>
+</div>
+<script>
+function clearHist(){document.getElementById("mask").classList.add("show");}
+function hide(){document.getElementById("mask").classList.remove("show");}
+function showDisclaimer(){document.getElementById("mask").classList.add("show");}
+function toast(t){const el=document.getElementById("toast");el.textContent=t;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),1600);}
+</script>
+</body>
+</html>

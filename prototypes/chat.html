@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>问安 · AI 问答</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #e8ecf1; display: flex; justify-content: center; padding: 24px 0; }
+.phone { width: 375px; height: 720px; background: #f7f9fa; border-radius: 28px; box-shadow: 0 12px 40px rgba(0,0,0,0.18); overflow: hidden; display: flex; flex-direction: column; position: relative; }
+.screen { flex: 1; overflow-y: auto; }
+.statusbar { height: 28px; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #9aa5ad; }
+.nav { background: #fff; padding: 10px 14px 8px; border-bottom: 1px solid #eef1f3; }
+.nav .row { display: flex; align-items: center; gap: 10px; }
+.nav .back { font-size: 20px; color: #2b3a42; text-decoration: none; }
+.nav .tt { font-size: 16px; font-weight: 700; color: #2b3a42; flex: 1; text-align: center; margin-right: 24px; }
+.modes { display: flex; background: #f0f3f5; border-radius: 9px; padding: 3px; margin-top: 8px; }
+.mode { flex: 1; text-align: center; font-size: 12px; color: #6b7a83; padding: 6px 0; border-radius: 7px; cursor: pointer; }
+.mode.on { background: #fff; color: #00897B; font-weight: 700; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.risk-bar { background: #fff7e6; color: #8a6116; font-size: 10.5px; padding: 6px 14px; line-height: 1.5; }
+.chat { padding: 14px 14px 10px; display: flex; flex-direction: column; gap: 12px; }
+.msg { max-width: 86%; font-size: 13.5px; line-height: 1.6; }
+.msg .bubble { border-radius: 14px; padding: 10px 13px; }
+.msg.user { align-self: flex-end; }
+.msg.user .bubble { background: #00897B; color: #fff; border-bottom-right-radius: 4px; }
+.msg.ai { align-self: flex-start; }
+.msg.ai .bubble { background: #fff; color: #2b3a42; border-bottom-left-radius: 4px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+.msg.ai .src { font-size: 10px; color: #9aa5ad; margin-top: 6px; }
+.seg { margin-top: 8px; padding-top: 8px; border-top: 1px dashed #e3e8eb; }
+.seg .st { font-weight: 700; color: #00897B; font-size: 12.5px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.badge { display: inline-flex; align-items: center; gap: 3px; font-size: 9.5px; font-weight: 600; border-radius: 4px; padding: 2px 7px; cursor: pointer; }
+.badge.ok { background: #e0f2f1; color: #00796b; }
+.badge.guess { background: #fff3e0; color: #b26a00; }
+.badge.lack { background: #eceff1; color: #78909c; }
+.prep-btn { display: block; margin-top: 9px; background: #e0f2f1; color: #00695c; font-size: 12.5px; font-weight: 700; text-align: center; padding: 8px; border-radius: 9px; text-decoration: none; border: 1px solid #b2dfdb; }
+.danger { align-self: stretch; max-width: 100%; background: #fdecea; border: 1px solid #f5c6c0; border-radius: 12px; padding: 12px 13px; }
+.danger .dt { color: #c0392b; font-weight: 700; font-size: 13.5px; }
+.danger .dd { color: #7b4a44; font-size: 12px; margin-top: 5px; line-height: 1.6; }
+.danger .call { display: inline-block; margin-top: 9px; background: #e53935; color: #fff; font-size: 12.5px; font-weight: 700; padding: 7px 16px; border-radius: 8px; text-decoration: none; }
+.fb { display: flex; gap: 8px; margin-top: 7px; }
+.fb button { border: 1px solid #dfe6ea; background: #fff; border-radius: 14px; font-size: 11px; color: #6b7a83; padding: 4px 12px; cursor: pointer; }
+.typing { align-self: flex-start; background: #fff; border-radius: 14px; padding: 10px 14px; font-size: 13px; color: #9aa5ad; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+/* 引导问诊面板 */
+.guide { align-self: stretch; background: #fff; border: 1px solid #d5e8e6; border-radius: 14px; padding: 13px 14px; }
+.guide .gt { font-size: 13.5px; font-weight: 700; color: #00695c; }
+.steps { display: flex; align-items: center; gap: 4px; margin: 9px 0 10px; }
+.step-dot { flex: 1; height: 4px; border-radius: 2px; background: #e3e8eb; }
+.step-dot.done { background: #00897B; }
+.guide .q { font-size: 13.5px; font-weight: 600; color: #2b3a42; }
+.guide .hint { font-size: 10.5px; color: #9aa5ad; margin-top: 2px; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.chip { border: 1px solid #dfe6ea; background: #f7f9fa; border-radius: 16px; font-size: 12px; color: #4a5a63; padding: 6px 13px; cursor: pointer; }
+.chip.on { background: #00897B; border-color: #00897B; color: #fff; font-weight: 600; }
+.guide .nav-btns { display: flex; gap: 8px; margin-top: 12px; }
+.guide .nav-btns button { flex: 1; border: none; border-radius: 9px; padding: 8px; font-size: 12.5px; font-weight: 600; cursor: pointer; }
+.guide .prev { background: #f0f3f5; color: #6b7a83; }
+.guide .next { background: #00897B; color: #fff; }
+.inputbar { background: #fff; border-top: 1px solid #e6ebee; padding: 9px 12px; display: flex; gap: 8px; }
+.inputbar input { flex: 1; border: 1px solid #dfe6ea; border-radius: 20px; padding: 9px 14px; font-size: 13px; outline: none; background: #f7f9fa; }
+.inputbar .send { background: #00897B; color: #fff; border: none; border-radius: 20px; padding: 0 18px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.footer-note { text-align: center; font-size: 9.5px; color: #b0bac1; padding: 6px 0 8px; background: #fff; }
+.tabbar { height: 56px; background: #fff; border-top: 1px solid #e6ebee; display: flex; }
+.tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; font-size: 10px; color: #9aa5ad; gap: 2px; }
+.tab .ti { font-size: 19px; }
+.tab.on { color: #00897B; font-weight: 600; }
+.toast { position: absolute; left: 50%; bottom: 150px; transform: translateX(-50%); background: rgba(30,40,46,0.92); color: #fff; font-size: 11.5px; border-radius: 8px; padding: 8px 14px; opacity: 0; transition: opacity .25s; pointer-events: none; z-index: 20; max-width: 320px; line-height: 1.5; }
+.toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="statusbar">9:41</div>
+  <div class="screen" id="screen">
+    <div class="nav">
+      <div class="row"><a class="back" href="index.html">‹</a><div class="tt">问安 AI · 症状问答</div></div>
+      <div class="modes">
+        <div class="mode on" id="mode-free" onclick="setMode('free')">✍️ 自由提问</div>
+        <div class="mode" id="mode-guided" onclick="setMode('guided')">🧭 引导问诊</div>
+      </div>
+    </div>
+    <div class="risk-bar">⚠️ 科普参考，不构成诊断建议 · 急重症请拨打 120 · 点徽章可看含义</div>
+    <div class="chat" id="chat">
+      <div class="msg ai"><div class="bubble">你好，我是问安 AI 🩺<div class="seg">我可以帮你查询症状的健康科普与就医建议。不确定怎么描述？试试上方的<strong>「引导问诊」</strong>，四个小问题帮你把症状说清楚。</div><div class="src">—— 问安仅提供健康科普，不能替代医生诊断</div></div></div>
+      <div class="msg user"><div class="bubble">孩子半夜发烧 38.9℃，精神有点蔫，怎么办？</div></div>
+      <div class="danger">
+        <div class="dt">🚨 请先关注这些危险信号</div>
+        <div class="dd">若出现<strong>高热惊厥、抽搐、呼吸急促、精神萎靡唤不醒、持续呕吐</strong>，或 3 个月以下婴儿发热，请<strong>立即就医</strong>，不要等待。</div>
+        <a class="call" href="tel:120">📞 拨打 120</a>
+      </div>
+      <div class="msg ai"><div class="bubble"><strong>可能的情况</strong><span class="badge guess" onclick="badgeTip('guess')">≈ 推测</span><div class="seg">儿童夜间发热最常见的原因是病毒性呼吸道感染（如普通感冒、流感）。发热本身是免疫系统对抗感染的表现，38.5℃ 左右的体温需要密切观察孩子的精神状态。</div></div></div>
+      <div class="msg ai"><div class="bubble"><strong>居家护理建议</strong><span class="badge ok" onclick="badgeTip('ok')">✓ 确定</span><div class="seg">1. 保持室内通风，减少衣物被褥捂热；<br>2. 少量多次补充温水或口服补液盐；<br>3. 体温超过 38.5℃ 且孩子明显不适时，可在医生或药师指导下使用儿童退热药物（请勿自行叠加用药）；<br>4. 每 30 分钟复测体温并记录。</div></div></div>
+      <div class="msg ai" id="final-msg"><div class="bubble"><strong>何时就医</strong><span class="badge ok" onclick="badgeTip('ok')">✓ 确定</span><div class="seg">- 发热超过 72 小时不退；<br>- 体温反复超过 40℃；<br>- 出现上述危险信号中的任何一条；<br>- 3 个月以下婴儿任何程度的发热。</div>
+        <a class="prep-btn" href="prep-pack.html?from=chat&topic=fever">🧳 把这次问答整理成「就诊准备包」</a>
+        <div class="src">—— 以上内容为健康科普，不构成诊断建议，请以医生判断为准</div></div>
+        <div class="fb"><button onclick="fbk(this,1)">👍 有帮助</button><button onclick="fbk(this,0)">👎 没帮助</button></div>
+      </div>
+    </div>
+    <div class="guide" id="guide" style="display:none; margin: 0 14px 10px;">
+      <div class="gt">🧭 引导问诊 <span style="font-size:10.5px;font-weight:400;color:#9aa5ad">第 <span id="g-step">1</span> / 4 步</span></div>
+      <div class="steps"><div class="step-dot done" id="d1"></div><div class="step-dot" id="d2"></div><div class="step-dot" id="d3"></div><div class="step-dot" id="d4"></div></div>
+      <div class="q" id="g-q"></div>
+      <div class="hint" id="g-hint"></div>
+      <div class="chips" id="g-chips"></div>
+      <div class="nav-btns"><button class="prev" onclick="gPrev()">上一步</button><button class="next" id="g-next" onclick="gNext()">下一步</button></div>
+    </div>
+  </div>
+  <div class="inputbar">
+    <input id="inp" type="text" placeholder="描述症状，如：头痛、发烧、腹泻…">
+    <button class="send" onclick="send()">发送</button>
+  </div>
+  <div class="footer-note">内容由 AI 生成，仅供健康科普参考 · 不构成诊断建议 · 不输出药品用法用量</div>
+  <div class="tabbar">
+    <a class="tab" href="index.html"><div class="ti">🏠</div>首页</a>
+    <a class="tab on" href="chat.html"><div class="ti">💬</div>AI问答</a>
+    <a class="tab" href="profile.html"><div class="ti">👤</div>我的</a>
+  </div>
+  <div class="toast" id="toast"></div>
+</div>
+<script>
+const params = new URLSearchParams(location.search);
+const topic = params.get("topic");
+if (topic) { document.getElementById("inp").value = "最近有" + topic + "的症状，应该怎么护理？"; }
+if (params.get("mode") === "guided") { setTimeout(()=>setMode("guided"), 300); }
+function toast(t){const el=document.getElementById("toast");el.textContent=t;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),2200);}
+function badgeTip(k){
+  if(k==='ok') toast("✓ 确定：内容直接来自权威科普知识库");
+  if(k==='guess') toast("≈ 推测：基于常见情况的推断，个体情况请以医生判断为准");
+  if(k==='lack') toast("? 证据不足：现有资料无法给出参考，建议就医咨询");
+}
+function fbk(btn,v){ btn.textContent = v ? "👍 已反馈" : "👎 已反馈"; toast("感谢反馈，我们会用它改进回答质量"); }
+
+/* ---------- 模式切换 ---------- */
+let MODE = "free";
+function setMode(m){
+  MODE = m;
+  document.getElementById("mode-free").classList.toggle("on", m==="free");
+  document.getElementById("mode-guided").classList.toggle("on", m==="guided");
+  document.getElementById("guide").style.display = m==="guided" ? "block" : "none";
+  if(m==="guided") gRender();
+  document.getElementById("screen").scrollTop = document.getElementById("screen").scrollHeight;
+}
+
+/* ---------- 引导问诊四步 ---------- */
+const GSTEPS = [
+  { q:"哪里不舒服？", hint:"选最主要的一个", opts:["发热","咳嗽","头痛","肚子疼","皮肤问题","睡眠问题"] },
+  { q:"持续多久了？", hint:"从出现症状算起", opts:["今天刚开始","1-3 天","超过一周","反复发作"] },
+  { q:"症状有变化吗？", hint:"对比刚出现的时候", opts:["慢慢好转","没有变化","在加重","时好时坏"] },
+  { q:"还有其他情况吗？", hint:"选符合的一项", opts:["没有其他情况","有慢性病","正在服药","对某些药物过敏"] }
+];
+let gIdx = 0, gSel = ["","","",""];
+function gRender(){
+  const s = GSTEPS[gIdx];
+  document.getElementById("g-step").textContent = gIdx+1;
+  document.getElementById("g-q").textContent = s.q;
+  document.getElementById("g-hint").textContent = s.hint;
+  for(let i=1;i<=4;i++){ document.getElementById("d"+i).classList.toggle("done", i<=gIdx); }
+  const box = document.getElementById("g-chips"); box.innerHTML = "";
+  s.opts.forEach(o=>{
+    const c = document.createElement("div");
+    c.className = "chip" + (gSel[gIdx]===o ? " on" : "");
+    c.textContent = o;
+    c.onclick = ()=>{ gSel[gIdx]=o; gRender(); };
+    box.appendChild(c);
+  });
+  const nx = document.getElementById("g-next");
+  nx.textContent = gIdx===3 ? "🩺 生成回答" : "下一步";
+}
+function gPrev(){ if(gIdx>0){ gIdx--; gRender(); } }
+function gNext(){
+  if(!gSel[gIdx]){ toast("请先选择一项"); return; }
+  if(gIdx<3){ gIdx++; gRender(); return; }
+  const parts = GSTEPS.map((s,i)=>s.q.replace("？","")+"："+gSel[i]);
+  const summary = "【引导问诊】\n" + parts.join("\n");
+  addUser(summary.replace(/\n/g,"；"));
+  answer("guided");
+  setMode("free");
+  document.getElementById("guide").style.display = "none";
+}
+
+/* ---------- 自由提问 ---------- */
+function addUser(text){
+  const chat = document.getElementById("chat");
+  const u = document.createElement("div");
+  u.className = "msg user";
+  u.innerHTML = '<div class="bubble"></div>';
+  u.querySelector(".bubble").textContent = text;
+  chat.appendChild(u);
+}
+function aiBubble(html){
+  const chat = document.getElementById("chat");
+  const a = document.createElement("div");
+  a.className = "msg ai";
+  a.innerHTML = '<div class="bubble">'+html+'<div class="src">—— 健康科普，不构成诊断建议，请以医生判断为准</div></div>';
+  const fb = document.createElement("div");
+  fb.className = "fb";
+  fb.innerHTML = '<button onclick="fbk(this,1)">👍 有帮助</button><button onclick="fbk(this,0)">👎 没帮助</button>';
+  a.appendChild(fb);
+  chat.appendChild(a);
+  document.getElementById("screen").scrollTop = 1e9;
+}
+function send(){
+  const inp = document.getElementById("inp");
+  const q = inp.value.trim();
+  if(!q) return;
+  addUser(q);
+  inp.value = "";
+  answer(q);
+}
+function answer(q){
+  const chat = document.getElementById("chat");
+  const t = document.createElement("div");
+  t.className = "typing";
+  t.textContent = "问安 AI 正在检索科普知识库…";
+  chat.appendChild(t);
+  const screen = document.getElementById("screen");
+  setTimeout(()=>{ screen.scrollTop = screen.scrollHeight; }, 50);
+  setTimeout(()=>{
+    t.remove();
+    const fever = /发|烧|热|孩子/.test(q), cough = /咳|嗓|咽/.test(q), guided = q.indexOf("引导问诊")===0;
+    if(fever){
+      chat.insertAdjacentHTML("beforeend",
+        '<div class="danger"><div class="dt">🚨 请先关注这些危险信号</div><div class="dd">若出现<strong>高热惊厥、抽搐、呼吸急促、精神萎靡唤不醒、持续呕吐</strong>，请<strong>立即就医</strong>，不要等待。</div><a class="call" href="tel:120">📞 拨打 120</a></div>');
+    }
+    const body = fever
+      ? '<strong>可能的情况</strong><span class="badge guess" onclick="badgeTip(\'guess\')">≈ 推测</span><div class="seg">儿童夜间发热最常见于病毒性呼吸道感染，发热是免疫系统的正常反应。关键是观察精神状态：能吃能玩可继续观察，持续萎靡需就医。</div>'
+      : cough
+      ? '<strong>可能的情况</strong><span class="badge guess" onclick="badgeTip(\'guess\')">≈ 推测</span><div class="seg">咳嗽常见于上呼吸道感染，多数在 1-2 周内自行缓解；保持室内湿度、避免烟雾刺激有助恢复。</div>'
+      : '<strong>可能的情况</strong><span class="badge lack" onclick="badgeTip(\'lack\')">? 证据不足</span><div class="seg">你描述的信息还比较简略，暂时无法给出有依据的参考。建议补充症状部位、持续时间与变化情况（可用「引导问诊」），或直接咨询医生。</div>';
+    const care = '<strong>居家护理</strong><span class="badge ok" onclick="badgeTip(\'ok\')">✓ 确定</span><div class="seg">'+(fever
+      ? "1. 保持通风、减少捂热；2. 少量多次补充温水；3. 38.5℃ 以上且明显不适时遵医嘱退热；4. 每 30 分钟复测体温并记录。"
+      : "1. 多喝温水、清淡饮食；2. 保证休息、室内通风加湿；3. 记录症状变化，便于就医时描述。")+'</div>';
+    const when = '<strong>何时就医</strong><span class="badge ok" onclick="badgeTip(\'ok\')">✓ 确定</span><div class="seg">'+(fever
+      ? "发热超 72 小时不退、反复超过 40℃、出现危险信号任一条、3 个月以下婴儿发热。"
+      : "症状超过 2 周、持续加重，或出现呼吸困难、剧烈疼痛、精神萎靡等情况。")+'</div>'
+      + '<a class="prep-btn" href="prep-pack.html?from=chat&topic='+(fever?'fever':cough?'cough':'other')+'">🧳 把这次问答整理成「就诊准备包」</a>';
+    aiBubble(body + care + when);
+  }, 1100);
+}
+</script>
+</body>
+</html>

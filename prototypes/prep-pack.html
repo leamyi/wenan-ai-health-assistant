@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>问安 · 就诊准备包</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #e8ecf1; display: flex; justify-content: center; padding: 24px 0; }
+.phone { width: 375px; height: 720px; background: #f7f9fa; border-radius: 28px; box-shadow: 0 12px 40px rgba(0,0,0,0.18); overflow: hidden; display: flex; flex-direction: column; position: relative; }
+.screen { flex: 1; overflow-y: auto; }
+.statusbar { height: 28px; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #9aa5ad; }
+.nav { background: #fff; padding: 10px 14px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #eef1f3; }
+.nav .back { font-size: 20px; color: #2b3a42; text-decoration: none; }
+.nav .tt { font-size: 16px; font-weight: 700; color: #2b3a42; flex: 1; text-align: center; margin-right: 24px; }
+.hero { background: linear-gradient(135deg, #00897B, #26a69a); color: #fff; padding: 16px; }
+.hero h1 { font-size: 17px; font-weight: 700; }
+.hero p { font-size: 11px; opacity: 0.9; margin-top: 4px; line-height: 1.5; }
+.body { padding: 12px 16px 16px; display: flex; flex-direction: column; gap: 10px; }
+.sec { background: #fff; border-radius: 12px; padding: 12px 14px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+.sec h2 { font-size: 12.5px; color: #00695c; display: flex; align-items: center; gap: 6px; }
+.sec .one { font-size: 13px; color: #2b3a42; font-weight: 600; margin-top: 7px; line-height: 1.6; }
+/* 时间线 */
+.tl { margin-top: 9px; padding-left: 16px; position: relative; }
+.tl::before { content: ""; position: absolute; left: 4px; top: 5px; bottom: 5px; width: 2px; background: #b2dfdb; }
+.tl .ev { position: relative; font-size: 11.5px; color: #4a5a63; line-height: 1.5; padding-bottom: 10px; }
+.tl .ev:last-child { padding-bottom: 2px; }
+.tl .ev::before { content: ""; position: absolute; left: -15px; top: 4px; width: 8px; height: 8px; border-radius: 50%; background: #00897B; border: 2px solid #e0f2f1; }
+.tl .ev .tm { color: #00897B; font-weight: 700; margin-right: 6px; }
+.chk { display: flex; align-items: flex-start; gap: 8px; font-size: 12.5px; color: #4a5a63; line-height: 1.55; margin-top: 8px; cursor: pointer; }
+.chk .box { width: 15px; height: 15px; border-radius: 4px; border: 1.5px solid #b6c2c9; flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #fff; }
+.chk.on .box { background: #00897B; border-color: #00897B; }
+.chk.on .box::after { content: "✓"; }
+.tips { background: #fff7e6; border: 1px solid #f3ddb0; border-radius: 12px; padding: 11px 13px; font-size: 11px; color: #8a6116; line-height: 1.65; }
+.actions { display: flex; gap: 10px; margin-top: 2px; }
+.actions button { flex: 1; border: none; border-radius: 11px; padding: 11px; font-size: 13px; font-weight: 700; cursor: pointer; }
+.btn-copy { background: #00897B; color: #fff; }
+.btn-ask { background: #fff; color: #00695c; border: 1px solid #b2dfdb !important; }
+.foot { text-align: center; font-size: 9.5px; color: #b0bac1; padding: 0 20px 14px; line-height: 1.6; }
+.tabbar { height: 56px; background: #fff; border-top: 1px solid #e6ebee; display: flex; }
+.tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-decoration: none; font-size: 10px; color: #9aa5ad; gap: 2px; }
+.tab .ti { font-size: 19px; }
+.tab.on { color: #00897B; font-weight: 600; }
+.toast { position: absolute; left: 50%; bottom: 150px; transform: translateX(-50%); background: rgba(30,40,46,0.92); color: #fff; font-size: 12px; border-radius: 8px; padding: 9px 16px; opacity: 0; transition: opacity .25s; pointer-events: none; z-index: 20; }
+.toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="statusbar">9:41</div>
+  <div class="screen">
+    <div class="nav"><a class="back" href="chat.html">‹</a><div class="tt">就诊准备包</div></div>
+    <div class="hero">
+      <h1>🧳 一页纸，把症状讲清楚</h1>
+      <p>由本次问答自动整理。到诊室后直接出示给医生，帮你少遗漏、不紧张，把时间留给沟通。</p>
+    </div>
+    <div class="body">
+      <div class="sec">
+        <h2>📌 主诉（一句话）</h2>
+        <div class="one" id="p-chief"></div>
+      </div>
+      <div class="sec">
+        <h2>🕐 症状时间线</h2>
+        <div class="tl" id="p-timeline"></div>
+      </div>
+      <div class="sec">
+        <h2>🏠 已经试过的护理</h2>
+        <div id="p-care" style="font-size:12.5px;color:#4a5a63;line-height:1.7;margin-top:7px"></div>
+      </div>
+      <div class="sec">
+        <h2>❓ 想问医生的问题（点选）</h2>
+        <div id="p-qs"></div>
+      </div>
+      <div class="actions">
+        <button class="btn-copy" onclick="copyPack()">📋 复制全部内容</button>
+        <button class="btn-ask" onclick="location.href='chat.html'">💬 回到问答补充</button>
+      </div>
+      <div class="tips">💡 使用提示：本准备包由 AI 整理自你的问答记录，仅供参考，请当面以医生问诊为准；请勿在包内填写身份证号等敏感信息。</div>
+      <div class="foot">问安 · 就诊准备包（FR-106） · 内容不构成诊断建议 · 历史记录仅存本机</div>
+    </div>
+  </div>
+  <div class="tabbar">
+    <a class="tab" href="index.html"><div class="ti">🏠</div>首页</a>
+    <a class="tab on" href="chat.html"><div class="ti">💬</div>AI问答</a>
+    <a class="tab" href="profile.html"><div class="ti">👤</div>我的</a>
+  </div>
+  <div class="toast" id="toast"></div>
+</div>
+<script>
+const PACKS = {
+  fever: {
+    chief: "孩子 12 岁以下，昨夜起发热，现测体温 38.9℃，精神稍差，无抽搐呕吐。",
+    timeline: [
+      ["09-24 晚", "出现流涕、轻度咳嗽"],
+      ["09-25 夜", "体温升至 38.9℃，精神变差"],
+      ["09-26 晨", "体温 38.2℃，已物理降温、少量补水"]
+    ],
+    care: "已减少衣物被褥、补充温水并复测体温记录；未自行使用退热药物。",
+    qs: ["需要做哪些检查来明确原因？","什么情况下需要来医院而不是继续在家观察？","居家护理还有哪些要注意的？"]
+  },
+  cough: {
+    chief: "咳嗽 2 天，伴咽痛，无发热，夜间咳嗽加重。",
+    timeline: [
+      ["09-24", "出现咽干、轻咳"],
+      ["09-25", "咳嗽加重，夜间明显"],
+      ["09-26", "仍咳嗽，无发热，精神正常"]
+    ],
+    care: "已多饮温水、保持室内湿度，避免辛辣食物。",
+    qs: ["咳嗽大概会持续多久？","出现哪些信号需要立即就医？","日常有什么方法可以缓解？"]
+  },
+  other: {
+    chief: "（示例）近一周偶有不适，具体症状可在问答中补充。",
+    timeline: [
+      ["第 1 天", "症状出现"],
+      ["近几天", "症状有波动，未用药"]
+    ],
+    care: "保持规律作息与清淡饮食，观察症状变化。",
+    qs: ["这个症状可能和什么有关？","需要做什么检查？","哪些信号提示需要尽快就医？"]
+  }
+};
+const key = new URLSearchParams(location.search).get("topic") || "other";
+const p = PACKS[key] || PACKS.other;
+document.getElementById("p-chief").textContent = p.chief;
+document.getElementById("p-timeline").innerHTML = p.timeline.map(e=>'<div class="ev"><span class="tm">'+e[0]+'</span>'+e[1]+'</div>').join("");
+document.getElementById("p-care").textContent = p.care;
+const qbox = document.getElementById("p-qs");
+p.qs.forEach(q=>{
+  const c = document.createElement("div");
+  c.className = "chk";
+  c.innerHTML = '<div class="box"></div><div>'+q+'</div>';
+  c.onclick = ()=>c.classList.toggle("on");
+  qbox.appendChild(c);
+});
+function toast(t){const el=document.getElementById("toast");el.textContent=t;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),1800);}
+function copyPack(){
+  const qs = [...document.querySelectorAll(".chk.on")].map(c=>"- "+c.children[1].textContent).join("\n");
+  const text = "【问安 · 就诊准备包】\n主诉："+p.chief+"\n时间线：\n"+p.timeline.map(e=>"· "+e[0]+" "+e[1]).join("\n")+"\n已尝试护理："+p.care+(qs?"\n想问医生：\n"+qs:"");
+  (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(
+    ()=>toast("已复制，可直接粘贴给医生或留存"),
+    ()=>toast("复制功能需在正式环境中授权，原型仅作演示")
+  );
+}
+</script>
+</body>
+</html>

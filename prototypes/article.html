@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>问安 · 科普详情</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #e8ecf1; display: flex; justify-content: center; padding: 24px 0; }
+.phone { width: 375px; height: 720px; background: #f7f9fa; border-radius: 28px; box-shadow: 0 12px 40px rgba(0,0,0,0.18); overflow: hidden; display: flex; flex-direction: column; }
+.screen { flex: 1; overflow-y: auto; }
+.statusbar { height: 28px; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #9aa5ad; }
+.nav { background: #fff; padding: 10px 14px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #eef1f3; position: sticky; top: 0; z-index: 2; }
+.nav .back { font-size: 20px; color: #2b3a42; text-decoration: none; }
+.nav .tt { font-size: 16px; font-weight: 700; color: #2b3a42; flex: 1; text-align: center; margin-right: 24px; }
+.hero { padding: 18px 16px 14px; background: #fff; }
+.hero .tag { display: inline-block; font-size: 10px; color: #00897B; background: #e0f2f1; border-radius: 4px; padding: 3px 8px; font-weight: 600; }
+.hero h1 { font-size: 19px; color: #2b3a42; margin-top: 9px; line-height: 1.4; }
+.hero .meta { font-size: 10.5px; color: #9aa5ad; margin-top: 7px; }
+.body { padding: 6px 16px 16px; }
+.sec { background: #fff; border-radius: 12px; padding: 13px 14px; margin-top: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.05); }
+.sec h2 { font-size: 14px; color: #2b3a42; display: flex; align-items: center; gap: 7px; }
+.sec p, .sec li { font-size: 12.5px; color: #4a5a63; line-height: 1.75; margin-top: 7px; }
+.sec ul { padding-left: 18px; margin-top: 7px; }
+.warn { background: #fff7e6; border: 1px solid #f3ddb0; border-radius: 12px; padding: 13px 14px; margin-top: 10px; }
+.warn h2 { font-size: 14px; color: #b26a00; }
+.warn li { color: #8a6116; }
+.warn .call { display: inline-block; margin-top: 9px; background: #e53935; color: #fff; font-size: 12.5px; font-weight: 700; padding: 7px 16px; border-radius: 8px; text-decoration: none; }
+.foot { text-align: center; font-size: 10px; color: #b0bac1; padding: 16px 24px 20px; line-height: 1.6; }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="statusbar">9:41</div>
+  <div class="screen">
+    <div class="nav"><a class="back" href="javascript:history.back()">‹</a><div class="tt">健康科普</div></div>
+    <div class="hero">
+      <span class="tag" id="h-tag">常见病科普</span>
+      <h1 id="h-title">普通感冒 vs 流感，一表分清</h1>
+      <div class="meta" id="h-meta">问安科普库 · 参考《常见症状健康科普知识库》 · 更新于 2026-09</div>
+    </div>
+    <div class="body" id="h-body"></div>
+    <div class="foot">本页内容由 AI 基于公开健康科普资料整理，仅供科普参考，不构成诊断建议；如有不适请及时就医，请以医生判断为准。</div>
+  </div>
+</div>
+<script>
+const ARTICLES = {
+  flu: {
+    tag: "呼吸系统", title: "普通感冒 vs 流感，一表分清",
+    secs: [
+      ["🦠 什么是", "普通感冒由鼻病毒等多种病原引起，症状较轻；流感由流感病毒引起，起病急、全身症状重，冬春季高发，传染性强。"],
+      ["🔍 常见症状对比", "普通感冒：鼻塞、流涕、咽痛，发热少且低，病程 5-7 天。<br>流感：突发高热（39-40℃）、头痛、全身肌肉酸痛、乏力明显，病程 1-2 周。"],
+      ["🏠 居家护理", "多休息、多饮水；保持室内通风；流感高发季避免去人群密集场所；咳嗽打喷嚏用纸巾或手肘遮挡。"],
+    ],
+    warn: ["突发高热超过 39.5℃ 且持续不退", "呼吸困难、胸痛、口唇发紫", "精神萎靡、意识模糊", "孕妇、老人、慢性病患者症状加重"],
+    myths: "「流感就是重一点的感冒」——不对，流感可引起肺炎等严重并发症，高危人群应尽早就医；「输液好得快」——无并发症的流感不需要输液，补液不能缩短病程。"
+  },
+  fever: {
+    tag: "儿童健康", title: "孩子半夜发烧，家长怎么做？",
+    secs: [
+      ["🌡️ 什么是", "发热是免疫系统对抗感染的常见表现，不是疾病本身。儿童腋温 ≥37.3℃ 为发热，38.5℃ 以上可考虑药物退热（遵医嘱）。"],
+      ["🏠 居家护理", "1. 减少衣物被褥，切勿捂汗；<br>2. 少量多次补充温水或口服补液盐；<br>3. 保持室内通风；<br>4. 每 30 分钟复测体温并记录；<br>5. 退热药物请严格按医嘱/说明书使用，勿交替叠加。"],
+      ["🔍 观察重点", "比体温数字更重要的是精神状态：能吃能玩、对呼唤有反应，通常可继续居家观察；如果持续萎靡、拒食拒水，需要就医。"],
+    ],
+    warn: ["3 个月以下婴儿任何程度发热", "高热惊厥、抽搐", "呼吸急促、精神萎靡唤不醒", "发热超过 72 小时不退"],
+    myths: "「捂汗退烧」——危险！儿童体温调节能力弱，捂热可致高热惊厥甚至捂热综合征；「酒精擦浴」——不推荐，可能引起酒精吸收中毒。"
+  },
+  diarrhea: {
+    tag: "消化系统", title: "腹泻了，补液比止泻更重要",
+    secs: [
+      ["🚽 什么是", "腹泻指每日排便 ≥3 次且粪便变稀。急性腹泻最常见原因是病毒或细菌感染、饮食不当，多在数天内自愈。"],
+      ["🏠 居家护理", "1. 首要任务是防脱水：口服补液盐按说明冲服，少量多次；<br>2. 清淡饮食（米粥、面条），避免高脂高糖与生冷；<br>3. 不推荐自行使用强力止泻药；<br>4. 便后清洁，注意手卫生避免家庭传播。"],
+      ["🔍 观察重点", "记录腹泻次数、粪便性状、尿量。尿量明显减少、口唇干燥、眼窝凹陷提示脱水，需及时补液并就医评估。"],
+    ],
+    warn: ["便中带血或呈黑色", "严重脱水（尿少、口干、精神差）", "高热伴剧烈腹痛", "婴幼儿、老人腹泻超过 24 小时未缓解"],
+    myths: "「腹泻要禁食」——继续清淡进食更有利恢复；「一拉就吃抗生素」——多数急性腹泻由病毒引起，滥用抗生素无效且有害。"
+  },
+  sleep: {
+    tag: "神经/睡眠", title: "长期失眠，先从睡眠卫生做起",
+    secs: [
+      ["🌙 什么是", "失眠指入睡困难、早醒或睡眠质量差且影响白天状态，每周 ≥3 次、持续 ≥1 个月为慢性失眠。"],
+      ["🏠 居家改善建议", "1. 固定起床时间（含周末）；<br>2. 卧室只用于睡觉，睡前 1 小时远离手机；<br>3. 下午 2 点后避免咖啡因；<br>4. 白天适度运动，但睡前 3 小时避免剧烈运动；<br>5. 躺下 20 分钟睡不着就起来，做放松的事；<br>6. 午睡 ≤30 分钟。"],
+      ["🔍 何时需要帮助", "若自我调整 4 周仍无改善，或伴情绪低落、焦虑，建议至睡眠门诊或心理科就诊。安眠药物须由医生评估后处方，请勿自行购买服用。"],
+    ],
+    warn: ["伴情绪持续低落、兴趣丧失", "夜间打鼾伴呼吸暂停", "白天嗜睡影响工作驾驶", "自行服用安眠药物后不适"],
+    myths: "「睡前喝酒助眠」——酒精会破坏睡眠结构导致后半夜易醒；「周末补觉能还债」——作息剧烈波动反而加重失眠。"
+  }
+};
+const id = new URLSearchParams(location.search).get("id") || "flu";
+const a = ARTICLES[id] || ARTICLES.flu;
+document.getElementById("h-tag").textContent = a.tag;
+document.getElementById("h-title").textContent = a.title;
+const body = document.getElementById("h-body");
+let html = "";
+for (const [t, c] of a.secs) { html += '<div class="sec"><h2>' + t + '</h2><p>' + c + '</p></div>'; }
+html += '<div class="warn"><h2>⚠️ 出现以下情况请立即就医</h2><ul>' + a.warn.map(w => "<li>" + w + "</li>").join("") + '</ul><a class="call" href="tel:120">📞 拨打 120</a></div>';
+html += '<div class="sec"><h2>❌ 常见误区</h2><p>' + a.myths + '</p></div>';
+html += '<a href="chat.html?topic=' + encodeURIComponent(a.title.slice(0,3)) + '" style="display:block;background:#00897B;color:#fff;border-radius:12px;padding:12px;text-align:center;font-size:13.5px;font-weight:700;text-decoration:none;margin-top:12px;">💬 就这个症状继续问 AI</a>';
+html += '<a href="prep-pack.html?topic=' + (id==='fever'?'fever':id==='diarrhea'?'other':'cough') + '" style="display:block;background:#fff;color:#00695c;border:1px solid #b2dfdb;border-radius:12px;padding:11px;text-align:center;font-size:13px;font-weight:600;text-decoration:none;margin-top:9px;">🧳 生成就诊准备包</a>';
+body.innerHTML = html;
+</script>
+</body>
+</html>
